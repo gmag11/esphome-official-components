@@ -1,11 +1,8 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import binary_sensor
-from esphome.const import CONF_ID, CONF_KEY
+from esphome.const import CONF_ID, CONF_KEY, CONF_ROW, CONF_COL
 from .. import MatrixKeypad, matrix_keypad_ns, CONF_KEYPAD_ID
-
-CONF_ROW = "row"
-CONF_COL = "col"
 
 DEPENDENCIES = ["matrix_keypad"]
 
@@ -30,9 +27,8 @@ def check_button(obj):
 
 
 CONFIG_SCHEMA = cv.All(
-    binary_sensor.BINARY_SENSOR_SCHEMA.extend(
+    binary_sensor.binary_sensor_schema(MatrixKeypadBinarySensor).extend(
         {
-            cv.GenerateID(): cv.declare_id(MatrixKeypadBinarySensor),
             cv.GenerateID(CONF_KEYPAD_ID): cv.use_id(MatrixKeypad),
             cv.Optional(CONF_ROW): cv.int_,
             cv.Optional(CONF_COL): cv.int_,

@@ -1,5 +1,6 @@
-#include "mdns_component.h"
 #include "esphome/core/defines.h"
+#ifdef USE_MDNS
+#include "mdns_component.h"
 #include "esphome/core/version.h"
 #include "esphome/core/application.h"
 #include "esphome/core/log.h"
@@ -45,6 +46,9 @@ void MDNSComponent::compile_records_() {
 #ifdef USE_RP2040
     platform = "RP2040";
 #endif
+#ifdef USE_LIBRETINY
+    platform = lt_cpu_get_model_name();
+#endif
     if (platform != nullptr) {
       service.txt_records.push_back({"platform", platform});
     }
@@ -55,6 +59,10 @@ void MDNSComponent::compile_records_() {
     service.txt_records.push_back({"network", "wifi"});
 #elif defined(USE_ETHERNET)
     service.txt_records.push_back({"network", "ethernet"});
+#endif
+
+#ifdef USE_API_NOISE
+    service.txt_records.push_back({"api_encryption", "Noise_NNpsk0_25519_ChaChaPoly_SHA256"});
 #endif
 
 #ifdef ESPHOME_PROJECT_NAME
@@ -90,6 +98,8 @@ void MDNSComponent::compile_records_() {
   }
 #endif
 
+  this->services_.insert(this->services_.end(), this->services_extra_.begin(), this->services_extra_.end());
+
   if (this->services_.empty()) {
     // Publish "http" service if not using native API
     // This is just to have *some* mDNS service so that .local resolution works
@@ -116,3 +126,4 @@ void MDNSComponent::dump_config() {
 
 }  // namespace mdns
 }  // namespace esphome
+#endif

@@ -1,5 +1,6 @@
 #pragma once
-
+#include "esphome/core/defines.h"
+#ifdef USE_MDNS
 #include <string>
 #include <vector>
 #include "esphome/core/component.h"
@@ -33,7 +34,12 @@ class MDNSComponent : public Component {
 #endif
   float get_setup_priority() const override { return setup_priority::AFTER_WIFI; }
 
+  void add_extra_service(MDNSService service) { services_extra_.push_back(std::move(service)); }
+
+  void on_shutdown() override;
+
  protected:
+  std::vector<MDNSService> services_extra_{};
   std::vector<MDNSService> services_{};
   std::string hostname_;
   void compile_records_();
@@ -41,3 +47,4 @@ class MDNSComponent : public Component {
 
 }  // namespace mdns
 }  // namespace esphome
+#endif
